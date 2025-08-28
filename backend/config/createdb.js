@@ -188,7 +188,7 @@ const insertDataQueries = [
   VALUES
   ('admin', 'Emily', 'Blossom', 'emily.blossom@beautywellness.com', 'hashed_password1', "123-456-7890"),
   ('customer', 'Sophia', 'Grace', 'sophia.grace@example.com', 'hashed_password2', "123-456-7890"),
-  ('admin', 'Lucas', 'A', 'lucas@1.se', '$2b$10$18wHqr3Wqp91iaAbUIIxPuuMFZxku4.IYuWU0z06K9TjGMthMbvh2', "123-456-7890"),
+  ('admin', 'Lucas', 'A', 'lucas@1.se', '$2y$10$vHgbdRbeb60v40U282Zh1ef.TLY7PzfT4hTSD3e1tFQuMyKik15ES', "123-456-7890"),
   ('customer', 'Liam', 'Johnson', 'liam.johnson@example.com', 'hashed_password3', "123-456-7890");`,
 
   // Insert into Categories

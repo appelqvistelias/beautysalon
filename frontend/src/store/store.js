@@ -1,6 +1,33 @@
 import Vuex from "vuex";
 import Swal from "sweetalert2";
 
+const CART_EXPIRATION_MS = 1000 * 60 * 60 * 3;
+
+const cartExpirationPlugin = (store) => {
+  store.dispatch("checkCartExpirationOnInit");
+
+  const CART_MUTATIONS = [
+    "addToCart",
+    "incrementItemInCart",
+    "decrementItemInCart",
+    "removeFromCart",
+    "setCart",
+    "clearCart",
+  ];
+
+  store.subscribe((mutations, state) => {
+    if (!CART_MUTATIONS.includes(mutations.type)) return;
+
+    if (state.cart.length > 0 && mutations.type !== "clearCart") {
+      localStorage.setItem("cartTimestamp", Date.now().toString());
+      store.dispatch("resetCartExpirationTimer");
+    } else {
+      localStorage.removeItem("cartTimestamp");
+      store.dispatch("stopCartExpirationTimer");
+    }
+  });
+};
+
 export const store = new Vuex.Store({
   state: {
     isLoggedIn: false,
@@ -14,6 +41,7 @@ export const store = new Vuex.Store({
     isCartVisible: false,
     lastAddedItem: null,
     isMobileMenuVisible: false,
+    cartExpirationTimeoutId: null,
   },
   mutations: {
     toggleMobileMenuVisibility(state) {
@@ -144,6 +172,24 @@ export const store = new Vuex.Store({
     clearCart(state) {
       state.cart = [];
       localStorage.removeItem("cart");
+      localStorage.removeItem("cartTimestamp");
+      if (state.cartExpirationTimeoutId) {
+        clearTimeout(state.cartExpirationTimeoutId);
+        state.cartExpirationTimeoutId = null;
+      }
+    },
+
+    setCartExpirationTimeout(state, timeoutId) {
+      if (state.cartExpirationTimeoutId) {
+        clearTimeout(state.cartExpirationTimeoutId);
+      }
+      state.cartExpirationTimeoutId = timeoutId;
+    },
+    clearCartExpirationTimeout(state) {
+      if (state.cartExpirationTimeoutId) {
+        clearTimeout(state.cartExpirationTimeoutId);
+        state.cartExpirationTimeoutId = null;
+      }
     },
   },
   getters: {
@@ -222,5 +268,39 @@ export const store = new Vuex.Store({
         commit("logout");
       }
     },
+    resetCartExpirationTimer({ commit }) {
+      const id = setTimeout(() => {
+        commit("clearCart");
+        Swal.fire("Din varukorg har tömts p.g.a. inaktivitet.");
+      }, CART_EXPIRATION_MS);
+      commit("setCartExpirationTimeout", id);
+    },
+
+    stopCartExpirationTimer({ commit }) {
+      commit("clearCartExpirationTimeout");
+    },
+
+    checkCartExpirationOnInit({ state, commit }) {
+      const ts = localStorage.getItem("cartTimestamp");
+      if (!ts) return;
+
+      const elapsed = Date.now() - parseInt(ts, 10);
+      if (elapsed >= CART_EXPIRATION_MS) {
+        commit("clearCart");
+        return;
+      }
+
+      if (state.cart.length > 0) {
+        const remaining = CART_EXPIRATION_MS - elapsed;
+        const id = setTimeout(() => {
+          commit("clearCart");
+          Swal.fire("Din varukorg har tömts p.g.a. inaktivitet (3 timmar).");
+        }, remaining);
+        commit("setCartExpirationTimeout", id);
+      } else {
+        localStorage.removeItem("cartTimestamp");
+      }
+    },
   },
+  plugins: [cartExpirationPlugin],
 });

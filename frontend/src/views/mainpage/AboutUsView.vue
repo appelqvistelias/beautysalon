@@ -58,9 +58,11 @@
 
         <div class="map">
           <MapBoxMap
+            v-if="apiKey"
             :accessToken="apiKey"
             :center="[11.96867975823242, 57.69932077009476]"
           />
+          <GoogleMapFallback v-else />
         </div>
       </div>
       <ContactForm></ContactForm>
@@ -71,14 +73,16 @@
 <script>
 import MapBoxMap from "../../components/MapBoxMap.vue";
 import ContactForm from "../../components/ContactForm.vue";
+import GoogleMapFallback from "../../components/GoogleMapFallback.vue";
 export default {
   name: "AboutUsPage",
   components: {
     MapBoxMap,
     ContactForm,
+    GoogleMapFallback,
   },
   setup() {
-    const apiKey = process.env.VUE_APP_MAPBOX_API_KEY;
+    const apiKey = process.env.VUE_APP_MAPBOX_API_KEY || "";
     return { apiKey };
   },
 };

@@ -18,7 +18,7 @@
           </div>
 
           <a href="https://www.bokadirekt.se/places/sn-beauty-56396">
-            <button class="bokadirekt">BOKADIREKT</button></a
+            <button class="bokadirekt">BOKA DIREKT</button></a
           >
         </div>
         <div class="page-links">

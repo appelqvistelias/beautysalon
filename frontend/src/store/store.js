@@ -294,7 +294,7 @@ export const store = new Vuex.Store({
         const remaining = CART_EXPIRATION_MS - elapsed;
         const id = setTimeout(() => {
           commit("clearCart");
-          Swal.fire("Din varukorg har tömts p.g.a. inaktivitet (3 timmar).");
+          Swal.fire("Din varukorg har tömts p.g.a. inaktivitet.");
         }, remaining);
         commit("setCartExpirationTimeout", id);
       } else {

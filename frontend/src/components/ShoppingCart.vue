@@ -199,7 +199,7 @@ export default {
           console.error("Error during checkout:", error);
           Swal.fire(
             "Error",
-            "Vi kunde inte hantera din order, snälla försök senare igen"
+            "Vi kunde inte hantera din order, försök senare igen"
           );
         }
       } finally {
